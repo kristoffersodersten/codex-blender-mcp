@@ -1,0 +1,40 @@
+{
+  "name": "codex-blender-mcp",
+  "version": "0.1.0",
+  "description": "Local MCP server for creating Blender 2D sketches and 3D models from Codex.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "codex-blender-mcp": "dist/src/server.js"
+  },
+  "files": [
+    "dist",
+    "blender",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && mkdir -p dist/blender && cp blender/bridge.py dist/blender/bridge.py",
+    "dev": "tsx src/server.ts",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest run",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@types/node": "^22.15.2",
+    "eslint": "^9.25.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.0",
+    "vitest": "^3.1.2"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}
