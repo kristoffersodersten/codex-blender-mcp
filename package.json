@@ -4,6 +4,24 @@
   "description": "Local MCP server for creating Blender 2D sketches and 3D models from Codex.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://github.com/kristoffersodersten/codex-blender-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kristoffersodersten/codex-blender-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kristoffersodersten/codex-blender-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "blender",
+    "codex",
+    "3d",
+    "2d",
+    "typescript",
+    "local-first"
+  ],
   "bin": {
     "codex-blender-mcp": "dist/src/server.js"
   },
@@ -19,7 +37,7 @@
     "dev": "tsx src/server.ts",
     "lint": "eslint . --ext .ts",
     "test": "vitest run",
-    "start": "node dist/server.js"
+    "start": "node dist/src/server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",
