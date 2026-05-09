@@ -1,28 +1,33 @@
 {
-  "name": "codex-blender-mcp",
+  "name": "nova-measured",
   "version": "0.1.0",
-  "description": "Local MCP server for creating Blender 2D sketches and 3D models from Codex.",
+  "description": "Measured by Nova: local spatial reconstruction framework for physically accurate Blender models from measurements, structured photos, and materials.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/kristoffersodersten/codex-blender-mcp#readme",
+  "homepage": "https://github.com/kristoffersodersten/nova-measured#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kristoffersodersten/codex-blender-mcp.git"
+    "url": "git+https://github.com/kristoffersodersten/nova-measured.git"
   },
   "bugs": {
-    "url": "https://github.com/kristoffersodersten/codex-blender-mcp/issues"
+    "url": "https://github.com/kristoffersodersten/nova-measured/issues"
   },
   "keywords": [
     "mcp",
     "model-context-protocol",
     "blender",
-    "codex",
+    "llm-agnostic",
+    "spatial-reconstruction",
+    "photogrammetry",
+    "pbr",
+    "measured-visualization",
     "3d",
     "2d",
     "typescript",
     "local-first"
   ],
   "bin": {
+    "nova-measured": "dist/src/server.js",
     "codex-blender-mcp": "dist/src/server.js"
   },
   "files": [

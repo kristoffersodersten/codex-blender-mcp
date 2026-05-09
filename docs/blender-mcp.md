@@ -1,10 +1,26 @@
-# Codex Blender MCP Operation Guide
+# Measured by Nova Operation Guide
 
 ## Description
 
-Codex Blender MCP is a local Model Context Protocol server that lets an MCP client create Blender assets through deterministic tool contracts. It is intended for local creative automation, design exploration, technical sketching, and simple 3D scene generation.
+Measured by Nova is a local, LLM-agnostic Model Context Protocol server that lets any MCP client create Blender assets through deterministic tool contracts. Its primary production workflow is measurement-driven visualization: drawings, known dimensions, manually measured constraints, and typed parametric profiles become reproducible Blender geometry.
+
+Technical package/repository name: `nova-measured`.
 
 The server invokes Blender in background mode and runs a small Python bridge script. Tool inputs are validated in TypeScript before execution, and generated `.blend` files are written to the configured output directory.
+
+## Product And Accuracy Boundary
+
+Measured is not CAD, BIM, DWG/STEP export, legal surveying, or a fabrication tolerance system. It is a measured 3D visualization and permit-support documentation engine.
+
+Architecture contract:
+
+- Measurements are the primary source of truth.
+- Reference images are secondary and non-authoritative unless calibrated anchors are provided.
+- Blender geometry is the only renderable truth.
+- Blender orthographic views are the single source of truth for exported facade drawings.
+- Export stages are pure formatting: layout, labels, scale bars, metadata, and PDF/SVG/PNG composition only.
+- No geometry reconstruction, AI guessing, or missing-geometry inference is allowed during export.
+- The LLM is an optional orchestration layer and is never authoritative.
 
 ## Architecture
 
@@ -13,9 +29,10 @@ MCP client
   -> stdio transport
   -> TypeScript MCP server
   -> validated tool contract
+  -> measurement project JSON
   -> local Blender process
   -> blender/bridge.py
-  -> .blend output file
+  -> .blend / GLB / OBJ / visualization and permit-support artifacts
 ```
 
 ## Execution Boundary
@@ -25,9 +42,134 @@ MCP client
 | Transport | MCP stdio |
 | Compute location | Local machine |
 | Blender mode | Background process |
-| Output | Local `.blend` file |
+| Output | Local project JSON, `.blend`, `.glb`, `.obj`, orthographic image, and PDF artifacts |
 | Network usage | None by design |
 | Telemetry | None |
+
+## Measurement Project Model
+
+Project state is stored under:
+
+```text
+<BLENDER_OUTPUT_DIR>/measurement-projects/<projectId>/project.json
+```
+
+Every public measurement tool returns:
+
+```json
+{
+  "ok": true,
+  "requestId": "uuid",
+  "data": {},
+  "warnings": []
+}
+```
+
+Confidence values are part of the contract:
+
+| Confidence | Meaning |
+| --- | --- |
+| `high` | Permit drawings, official PDFs, known plan dimensions. |
+| `medium` | Manual site measurements. |
+| `low` | Photo-derived or visually inferred reference details. |
+
+Known dimensions override visual estimates. Non-calibrated photos are never treated as exact geometry.
+
+Every new project carries this source-of-truth policy:
+
+```json
+{
+  "measurementModel": "explicit_measurements_and_constraints",
+  "photos": "non_authoritative_reference_only",
+  "blenderGeometry": "only_renderable_geometry_truth",
+  "exportStage": "formatting_only_no_geometry_reconstruction",
+  "llmRole": "optional_orchestration_never_authoritative",
+  "nonGoal": "not_cad_not_bim_not_survey"
+}
+```
+
+## Measurement Tools
+
+| Tool | Purpose |
+| --- | --- |
+| `create_measurement_project` | Creates an empty measurement project. |
+| `import_reference_photos` | Stores photos as low-confidence references or validation inputs. |
+| `define_known_dimension` | Adds an authoritative or measured dimension constraint. |
+| `define_reference_plane` | Adds a measured or inferred alignment plane. |
+| `define_opening` | Adds a door, window, or open bay constraint. |
+| `define_step_run` | Adds stair runs using known rise, going, and count. |
+| `define_assumption` | Records explicit assumptions with confidence and geometry impact. |
+| `create_parametric_profile` | Adds a reusable structure profile such as `carport`. |
+| `generate_measured_model` | Builds deterministic Blender visualization geometry from project state. |
+| `validate_model` | Checks known dimensions and confidence rules. |
+| `lock_model_for_export` | Locks a human-reviewed model before permit-support export. |
+| `generate_elevation_views` | Creates plan, elevation, and section cameras/views. |
+| `export_model` | Exports `.blend`, `.glb`, and/or `.obj` artifacts. |
+| `export_dimensioned_drawings` | Creates a permit-support visualization PDF artifact. |
+| `export_facade_completion_pack` | Exports the MVP facade-completion package from a locked model. |
+| `export_project_template` | Creates recipient-specific export packages from unchanged source geometry and unchanged Blender orthographic views. |
+
+## Example: Carport Fixture
+
+```json
+{
+  "projectId": "carport-demo",
+  "profile": "carport",
+  "parameters": {
+    "widthMm": 7676,
+    "depthMm": 6240,
+    "roofSlopePercent": 3.7,
+    "westHighSideHeightMm": 3455,
+    "eastLowSideHeightMm": 3174,
+    "foundationHeights": {
+      "southwest": { "roadSideMm": 0, "middleMm": 685, "innerMm": 695 },
+      "northeast": { "outerTowardRoadMm": 530, "middleMm": 500, "innerMm": 630 }
+    },
+    "steps": [
+      { "stepDepthMm": 295, "stepHeightMm": 140, "count": 3, "locationHint": "entrance/platform" }
+    ],
+    "neighborBoundary": {
+      "from": "outermost_southwest_post",
+      "distanceMm": 7692
+    }
+  }
+}
+```
+
+The carport profile is a fixture on top of generic primitives. Future profiles should reuse the same project state, confidence model, validation layer, and export pipeline.
+
+## Output Templates
+
+The current bridge can produce measured Blender artifacts, orthographic view images, and technical PDF packages. Templates must never alter geometry.
+
+| Output Template | Expected Artifacts |
+| --- | --- |
+| `permit` | Plan, elevations, section, scale bars, dimensions, confidence legend. |
+| `permit-facade-pack` | Standard facade package from Blender orthographic views. |
+| `swedish-municipality` | Swedish municipal layout conventions and title block metadata. |
+| `gothenburg-permit` | Göteborg-oriented permit-support facade package. |
+| `measured-visualization` | Generic measured visualization package for review. |
+| `client-preview` | Textured GLB, perspective renders, simplified dimensions. |
+| `fabrication` | Component list, exact element bounds, OBJ/GLB, tolerance notes. |
+| `qa-validation` | Validation report, confidence map, reprojection warnings. |
+| `site-context` | Situation/context package with boundary distances and reference context. |
+| `photo-alignment` | Photo-reference review package with approximation warnings. |
+| `measurement-book` | Complete measurement and confidence source book. |
+| `web-viewer` | GLB and manifest for web delivery. |
+| `archive` | Reproducible project export package. |
+
+This keeps local geometry stable while letting each recipient receive only the representation they need.
+
+`cad-simulated` remains only as a deprecated legacy alias for older clients. New public templates must avoid CAD wording and use `permit-facade-pack`, `swedish-municipality`, `gothenburg-permit`, or `measured-visualization`.
+
+## Open Core Boundary
+
+Recommended packaging:
+
+| Layer | Suggested Visibility |
+| --- | --- |
+| MCP core, measurement model, validation, Blender integration | Public/open core |
+| Municipality-specific PDF templates, styling presets, UX layer, hosted workflow integrations | Private or commercial |
 
 ## Environment Variables
 
@@ -44,7 +186,7 @@ MCP client
   "mcpServers": {
     "blender": {
       "command": "node",
-      "args": ["/absolute/path/to/codex-blender-mcp/dist/src/server.js"],
+      "args": ["/absolute/path/to/nova-measured/dist/src/server.js"],
       "env": {
         "BLENDER_PATH": "/Applications/Blender.app/Contents/MacOS/Blender",
         "BLENDER_OUTPUT_DIR": "/absolute/path/to/outputs",
@@ -85,7 +227,7 @@ Creates a Blender scene containing curve strokes from 2D point coordinates. Each
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `name` | string | No | Scene name. Defaults to `codex-sketch`. |
+| `name` | string | No | Scene name. Defaults to `measured-sketch`. |
 | `strokes` | array | Yes | One or more stroke definitions. |
 | `backgroundColor` | hex color | No | World background color. Defaults to `#ffffff`. |
 | `outputFile` | string | No | Output `.blend` filename. Defaults to `sketch.blend`. |
@@ -125,7 +267,7 @@ Creates a Blender scene from primitive geometry. Supported primitives are `cube`
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `name` | string | No | Scene name. Defaults to `codex-model`. |
+| `name` | string | No | Scene name. Defaults to `measured-model`. |
 | `primitives` | array | Yes | One or more primitive definitions. |
 | `camera` | object | No | Camera location and target. |
 | `outputFile` | string | No | Output `.blend` filename. Defaults to `model.blend`. |
@@ -181,7 +323,7 @@ Camera fields:
 
 ### Description
 
-Runs explicit Blender Python in a clean scene. This tool is intended for advanced operations that exceed the primitive contracts.
+Runs explicit Blender Python in a clean scene. This tool is an unsafe fallback for advanced operations that exceed structured contracts.
 
 ### Input Schema
 
@@ -189,6 +331,7 @@ Runs explicit Blender Python in a clean scene. This tool is intended for advance
 | --- | --- | --- | --- |
 | `code` | string | Yes | Blender Python source code. |
 | `outputFile` | string | No | Output `.blend` filename. Defaults to `python-output.blend`. |
+| `unsafeAllowExecution` | `true` | Yes | Explicit opt-in gate for unsafe execution. |
 
 ### Execution Context
 
@@ -200,7 +343,7 @@ The Python bridge exposes:
 
 ### Safety Note
 
-`run_blender_python` can execute arbitrary local Python inside Blender. Use it only for trusted user-approved code.
+`run_blender_python` can execute local Python inside Blender. It requires explicit opt-in, blocks common file-system/process escape tokens, exposes restricted builtins, and should only be used for trusted user-approved code.
 
 ## Failure Semantics
 
