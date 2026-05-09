@@ -2,32 +2,33 @@
 
 ## Product Promise
 
-Measured by Nova turns verified real-world measurements into traceable permit-support drawings.
+Measured by Nova turns verified real-world measurements, structured photos, spatial constraints, and material metadata into traceable, physically accurate 3D models and render/export packages.
 
 It does not promise CAD, BIM, legal survey accuracy, construction engineering, or guaranteed municipal approval.
 
 ## MVP Positioning
 
-Measured by Nova is a measurement-driven modeling and documentation system for small building projects.
+Measured by Nova is a spatial reconstruction framework. The first MVP is a deliberately narrow validation slice for small exterior building projects.
 
 Primary message:
 
 ```text
-Measure. Verify. Generate permit-support drawings.
+Measure. Capture. Reconstruct. Render.
 ```
 
 Public wording:
 
 ```text
-Measured by Nova creates permit-support drawings from verifiable measurements.
-You provide real dimensions and reference photos. The system builds a traceable
-3D representation and exports orthographic facade documentation without CAD,
-consultant dependency, or AI guessing.
+Measured by Nova reconstructs real physical objects from exact measurements,
+structured photo capture, spatial constraints, and material metadata. The system
+builds a traceable 1:1 Blender model, applies verified visual/material evidence,
+and exports photorealistic or documentation-oriented artifacts without CAD claims
+or AI guessing.
 ```
 
 ## First Narrow Use Case
 
-The MVP targets facade-completion packages for small exterior projects.
+The MVP targets facade-completion packages for small exterior projects because they provide a constrained way to prove the wider spatial reconstruction architecture.
 
 Initial project types:
 
@@ -52,10 +53,11 @@ Generalized template family:
 | Measurements | Primary source of truth for geometry. |
 | Drawings / official PDFs | High-confidence measurement input. |
 | Manual site measurements | Medium-confidence measurement input. |
-| Photos | Reference only unless calibrated. |
+| Structured photos | Camera-pose, texture, material, and validation evidence; dimensional only when calibrated. |
+| Material metadata | PBR/material source of truth when explicitly provided. |
 | Blender geometry | Only renderable geometry truth. |
 | Blender orthographic views | Only geometry source for permit-support exports. |
-| PDF/layout engine | Formatting only; no geometry inference. |
+| Render/export engines | Formatting, rendering, optimization, packaging; no geometry inference after lock. |
 | LLM | Optional orchestration only; never authoritative. |
 
 Hard rules:
@@ -86,15 +88,17 @@ Measured by Nova is responsible for:
 ## MVP Workflow
 
 1. Create project
-2. Import reference photos
+2. Import structured multi-angle photos
 3. Enter measurements and confidence levels
-4. Select project profile
-5. Generate Blender model
-6. Human review and correction of 3D model
-7. Lock approved model
-8. Generate orthographic views in Blender
-9. Compose permit-support PDF from rendered views
-10. Export measurement list and confidence report
+4. Add material metadata
+5. Select project profile
+6. Generate base parametric model
+7. Align photo evidence to geometry
+8. Apply material/texture evidence where available
+9. Human review and correction of 3D model
+10. Lock approved model
+11. Generate photorealistic renders and/or orthographic views in Blender
+12. Export target package and confidence report
 
 ## MVP Inputs
 
@@ -133,6 +137,7 @@ Optional export package:
 - `.blend`
 - `.glb`
 - `.obj`
+- future USD/WebGL/real-time engine package
 - PNG/SVG orthographic views
 - Project JSON
 - Validation report

@@ -2,9 +2,9 @@
 
 ## System Purpose
 
-Measured by Nova converts verified measurements into deterministic Blender geometry and permit-support documentation.
+Measured by Nova reconstructs physical objects into deterministic, real-scale Blender geometry from exact measurements, structured multi-angle photography, spatial constraints, and material metadata.
 
-It is not a CAD kernel. It is a measurement-driven visualization and documentation pipeline.
+It is not a CAD kernel. It is a spatial reconstruction framework with measurement-driven geometry, photogrammetry-assisted alignment, PBR material capture, and export pipelines for visualization, real-time engines, AR/spatial computing, and permit-support documentation.
 
 ## Layer Contract
 
@@ -12,38 +12,41 @@ It is not a CAD kernel. It is a measurement-driven visualization and documentati
 | --- | --- | --- |
 | MCP client | User interaction and orchestration. | Never authoritative. |
 | TypeScript MCP server | Input validation, project state, tool contracts, quality gates. | Contract authority. |
-| Measurement project JSON | Source-of-truth state. | Data authority. |
-| Blender bridge | Geometry generation and orthographic rendering. | Renderable geometry authority. |
-| Export templates | Layout, labels, metadata, packaging. | Formatting only. |
+| Spatial project JSON | Measurements, capture metadata, materials, constraints, validation state. | Data authority. |
+| Measurement engine | Dimension constraints to base parametric mesh. | Geometry constraint authority. |
+| Photo alignment engine | Camera pose and visual evidence alignment. | Evidence authority, never dimensional authority. |
+| Blender bridge | Geometry generation, mesh refinement, material assignment, rendering. | Renderable geometry authority. |
+| Export pipelines | Blender, glTF/USD/WebGL/Unreal/AR outputs, layout, labels, metadata. | Packaging authority. |
 
 ## Pipeline
 
 ```text
-input_validation
+capture_protocol
+  -> input_validation
   -> measurement_modeling
-  -> geometry_generation
+  -> base_parametric_geometry
+  -> camera_pose_alignment
+  -> geometry_constraint_solving
+  -> mesh_refinement
+  -> pbr_material_assignment
+  -> texture_projection
   -> human_review
   -> model_lock
-  -> view_generation
-  -> line_rendering
-  -> image_postprocess
-  -> layout_composition
-  -> pdf_export
+  -> render_and_export
 ```
 
 ## Non-Negotiable Rules
 
 - Measurements are the primary source of truth.
-- Reference photos are secondary and non-authoritative unless calibrated.
+- Reference photos are secondary evidence for alignment, texture, material, and validation unless calibrated.
 - Blender geometry is the only renderable truth.
-- Blender orthographic views are the only geometry source for facade exports.
-- Export templates must not reconstruct, infer, or mutate geometry.
+- Export pipelines must not reconstruct, infer, or mutate geometry after model lock.
 - The LLM may orchestrate, but it may not decide geometry truth.
 - Missing data must create warnings or failures, not guesses.
 
 ## Determinism
 
-The same project JSON plus the same Blender bridge version should produce the same geometry and artifact manifest.
+The same project JSON plus the same reconstruction engine and Blender bridge version should produce the same geometry, material assignments, and artifact manifest within declared renderer tolerances.
 
 Deterministic behavior depends on:
 
@@ -51,6 +54,8 @@ Deterministic behavior depends on:
 - Relative output paths constrained to `BLENDER_OUTPUT_DIR`
 - Explicit confidence semantics
 - Explicit assumptions
+- Explicit capture protocol and camera metadata
+- Explicit material metadata
 - Model lock before permit-support export
 - No hidden remote service calls
 
@@ -62,6 +67,9 @@ Open-core extension points:
 - New validation checks
 - New generic export templates
 - New reference photo metadata
+- New capture protocols
+- New PBR material profiles
+- New real-time export targets
 
 Commercial/private extension points:
 

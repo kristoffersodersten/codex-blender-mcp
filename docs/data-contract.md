@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The measurement project JSON is the product source of truth. It must be complete enough to regenerate the same Blender model and permit-support exports deterministically.
+The spatial project JSON is the product source of truth. It must be complete enough to regenerate the same real-scale Blender model, material assignments, and export manifests deterministically.
 
 ## Authority Order
 
@@ -10,10 +10,12 @@ The measurement project JSON is the product source of truth. It must be complete
 2. Official drawings or PDFs
 3. Manual site measurements
 4. Calibrated anchors, when available
-5. Reference photos
-6. User-declared assumptions
+5. Structured camera capture metadata
+6. Material metadata
+7. Reference photos
+8. User-declared assumptions
 
-Reference photos never override measured dimensions.
+Photos and AI-derived estimates never override measured dimensions.
 
 ## Core Project Fields
 
@@ -22,6 +24,8 @@ Reference photos never override measured dimensions.
 | `projectId` | Stable project identifier. |
 | `unit` | Always `mm` in schema version 1. |
 | `photos` | Non-authoritative visual references or validation images. |
+| `captureProtocol` | Required camera angles, coverage, lens/focal metadata, and calibration expectations. |
+| `materials` | Explicit material, color, PBR, finish, and texture-scale metadata. |
 | `dimensions` | Authoritative or manually measured constraints. |
 | `planes` | Reference planes for orientation and view generation. |
 | `openings` | Doors, windows, and open bays. |

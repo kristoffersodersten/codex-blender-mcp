@@ -1,10 +1,10 @@
 # Measured by Nova
 
-LLM-agnostic, local-first Model Context Protocol server for measurement-driven Blender visualization and permit-support exports.
+LLM-agnostic, local-first Model Context Protocol server for spatial reconstruction: physically accurate Blender models from exact measurements, structured multi-angle photography, and material metadata.
 
 ## Description
 
-Measured by Nova connects any MCP-capable client to a local Blender installation over stdio. Its primary workflow is a measurement project: verified dimensions, drawings, manually measured constraints, and optional reference photos are turned into deterministic Blender geometry and exportable artifacts.
+Measured by Nova connects any MCP-capable client to a local Blender installation over stdio. Its primary workflow is a spatial reconstruction project: verified dimensions, calibrated or structured photos, spatial constraints, and material metadata become deterministic 1:1 Blender geometry, photorealistic material/render outputs, and optimized downstream assets.
 
 Technical package/repository name: `nova-measured`.
 
@@ -12,29 +12,43 @@ The server is designed for sovereign local creative workflows: Blender runs on t
 
 ## Product Boundary
 
-Measured is not CAD, BIM, DWG/STEP export, legal surveying, or fabrication-grade tolerance software. It is a measurement-driven 3D visualization and documentation pipeline.
+Measured is not CAD, BIM, DWG/STEP export, legal surveying, or fabrication-grade tolerance software. It is a spatial reconstruction and physically measured visualization pipeline.
 
 Source-of-truth rules:
 
-- Measurements, drawings, explicit constraints, and calibrated anchors are authoritative for model construction.
-- Photos are complementary visual references unless calibration data is provided.
+- Exact measurements, drawings, explicit constraints, and calibrated anchors are authoritative for model construction.
+- Structured photos provide camera-pose, texture, material, and validation evidence; they are not allowed to override measured dimensions.
 - Blender geometry is the only renderable truth.
-- Blender orthographic views are the source of truth for facade/permit exports.
+- Blender geometry, USD/glTF exports, and orthographic views are generated from the same locked 1:1 model.
 - Export templates may add layout, labels, scale bars, metadata, and notes only; they must not infer or reconstruct geometry.
 - The LLM is optional orchestration and is never authoritative.
 
+## Product Scope
+
+Measured by Nova is a Spatial Reconstruction Framework.
+
+It is intended to reconstruct physical objects into accurate, editable, photorealistic 3D models from:
+
+- exact geometric measurements such as length, width, height, angles, radii, thicknesses, offsets, and tolerances
+- standardized 360-degree photo capture with defined camera positions
+- material metadata such as finish, color, reflectance, roughness, transparency, and texture scale
+- spatial structure such as planes, openings, edges, anchors, levels, and object relationships
+
+Target domains include real estate, vehicles, boats, consumer products, public environments, spatial commerce, virtual walkthroughs, and permit-support documentation.
+
 ## MVP Focus
 
-The first product slice is a facade-completion package for small building projects: measure, verify, generate a reviewed 3D representation, then export permit-support facade documentation.
+The first narrow vertical slice remains a facade-completion package for small building projects. It is a validation slice for the broader reconstruction architecture: measure, verify, generate a reviewed 3D representation, then export permit-support facade documentation.
 
 See [MVP product contract](docs/mvp.md).
 
 ## Features
 
-- Create measurement projects with confidence-tagged dimensions, planes, openings, steps, and profiles.
-- Generate deterministic measured Blender models from typed parametric profiles.
-- Use photos as low-confidence references or validation inputs, not as implicit measurement truth.
-- Export `.blend`, `.glb`, `.obj`, orthographic elevation views, and permit-support PDF artifacts.
+- Create spatial reconstruction projects with confidence-tagged dimensions, camera captures, material metadata, planes, openings, steps, and profiles.
+- Generate deterministic 1:1 Blender models from typed parametric profiles and measured constraints.
+- Align geometry with structured photographic evidence without letting photos override exact measurements.
+- Support photogrammetry-assisted texture projection and PBR material workflows as the pipeline matures.
+- Export `.blend`, `.glb`, `.obj`, orthographic elevation views, permit-support PDFs, and future real-time engine targets.
 - Keep legacy 2D sketch and primitive 3D tools for low-level utility work.
 - Run explicit Blender Python only as an unsafe opt-in fallback.
 - Validate all tool inputs with typed Zod contracts.
@@ -123,7 +137,7 @@ After building the project, register the server with your MCP client:
 { "projectId": "carport-demo", "unit": "mm" }
 ```
 
-Then import reference photos, define known dimensions, attach a profile, validate, generate the model, and export the requested output profile. The carport profile is the first fixture and uses width, depth, roof slope, high/low side heights, foundation heights, step runs, openings, and context references as structured inputs.
+Then import structured reference photos, define known dimensions, attach a profile, validate, generate the 1:1 model, review it, lock it, and export the requested output profile. The carport profile is the first fixture and uses width, depth, roof slope, high/low side heights, foundation heights, step runs, openings, material references, and context references as structured inputs.
 
 Output is intentionally profile-oriented: the same measured project can later target permit-support drawings, customer previews, fabrication packages, web viewers, or internal QA without changing the source geometry.
 
@@ -196,6 +210,7 @@ pnpm start
 
 - [Tool contracts and operation guide](docs/blender-mcp.md)
 - [Architecture](docs/architecture.md)
+- [Spatial reconstruction pipeline](docs/spatial-reconstruction.md)
 - [MVP product contract](docs/mvp.md)
 - [Measurement data contract](docs/data-contract.md)
 - [Quality gates](docs/quality-gates.md)
