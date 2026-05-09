@@ -1,18 +1,42 @@
-# Codex Blender MCP
+# Measured by Nova
 
-Local-first Model Context Protocol server for creating Blender 2D sketches and 3D models from Codex.
+LLM-agnostic, local-first Model Context Protocol server for measurement-driven Blender visualization and permit-support exports.
 
 ## Description
 
-Codex Blender MCP connects an MCP client to a local Blender installation over stdio. It exposes tools for generating curve-based 2D sketches, primitive-based 3D scenes, and user-approved advanced Blender Python operations.
+Measured by Nova connects any MCP-capable client to a local Blender installation over stdio. Its primary workflow is a measurement project: verified dimensions, drawings, manually measured constraints, and optional reference photos are turned into deterministic Blender geometry and exportable artifacts.
+
+Technical package/repository name: `nova-measured`.
 
 The server is designed for sovereign local creative workflows: Blender runs on the user's machine, generated `.blend` files are written to a local output directory, and no telemetry or cloud fallback is included.
 
+## Product Boundary
+
+Measured is not CAD, BIM, DWG/STEP export, legal surveying, or fabrication-grade tolerance software. It is a measurement-driven 3D visualization and documentation pipeline.
+
+Source-of-truth rules:
+
+- Measurements, drawings, explicit constraints, and calibrated anchors are authoritative for model construction.
+- Photos are complementary visual references unless calibration data is provided.
+- Blender geometry is the only renderable truth.
+- Blender orthographic views are the source of truth for facade/permit exports.
+- Export templates may add layout, labels, scale bars, metadata, and notes only; they must not infer or reconstruct geometry.
+- The LLM is optional orchestration and is never authoritative.
+
+## MVP Focus
+
+The first product slice is a facade-completion package for small building projects: measure, verify, generate a reviewed 3D representation, then export permit-support facade documentation.
+
+See [MVP product contract](docs/mvp.md).
+
 ## Features
 
-- Create 2D sketch scenes from stroke coordinates.
-- Create 3D model scenes from Blender primitives.
-- Run explicit Blender Python for advanced modeling tasks.
+- Create measurement projects with confidence-tagged dimensions, planes, openings, steps, and profiles.
+- Generate deterministic measured Blender models from typed parametric profiles.
+- Use photos as low-confidence references or validation inputs, not as implicit measurement truth.
+- Export `.blend`, `.glb`, `.obj`, orthographic elevation views, and permit-support PDF artifacts.
+- Keep legacy 2D sketch and primitive 3D tools for low-level utility work.
+- Run explicit Blender Python only as an unsafe opt-in fallback.
 - Validate all tool inputs with typed Zod contracts.
 - Keep output paths constrained to `BLENDER_OUTPUT_DIR`.
 - Use local Blender execution only.
@@ -57,7 +81,7 @@ After building the project, register the server with your MCP client:
   "mcpServers": {
     "blender": {
       "command": "node",
-      "args": ["/absolute/path/to/codex-blender-mcp/dist/src/server.js"],
+      "args": ["/absolute/path/to/nova-measured/dist/src/server.js"],
       "env": {
         "BLENDER_PATH": "/Applications/Blender.app/Contents/MacOS/Blender",
         "BLENDER_OUTPUT_DIR": "/absolute/path/to/outputs",
@@ -73,9 +97,39 @@ After building the project, register the server with your MCP client:
 | Tool | Purpose |
 | --- | --- |
 | `blender_status` | Verifies that the local Blender executable is reachable. |
+| `create_measurement_project` | Creates a measurement-driven project JSON workspace. |
+| `import_reference_photos` | Imports non-calibrated photos as low-confidence reference or validation inputs. |
+| `define_known_dimension` | Adds permit, drawing, or manually measured dimension constraints. |
+| `define_reference_plane` | Adds measured or inferred reference planes. |
+| `define_opening` | Adds door, window, or open bay constraints. |
+| `define_step_run` | Adds measured stair runs. |
+| `define_assumption` | Records explicit assumptions with confidence and geometry impact. |
+| `create_parametric_profile` | Attaches a typed profile such as `carport`. |
+| `generate_measured_model` | Generates deterministic Blender visualization geometry from project state. |
+| `validate_model` | Validates geometry and confidence rules. |
+| `lock_model_for_export` | Locks a human-reviewed model before permit-support export. |
+| `generate_elevation_views` | Creates orthographic plan, elevation, and section views. |
+| `export_model` | Exports measured artifacts as `.blend`, `.glb`, and/or `.obj`. |
+| `export_dimensioned_drawings` | Generates a permit-support visualization PDF artifact. |
+| `export_facade_completion_pack` | Exports the MVP facade-completion package from a locked model. |
+| `export_project_template` | Exports recipient-specific packages such as `permit-facade-pack`, `gothenburg-permit`, or `client-preview`. |
 | `create_2d_sketch` | Creates curve-based 2D strokes and saves a `.blend` file. |
 | `create_3d_model` | Creates a primitive-based 3D scene and saves a `.blend` file. |
-| `run_blender_python` | Runs explicit user-approved Blender Python code. |
+| `run_blender_python` | Unsafe fallback only; requires explicit opt-in. |
+
+## Measurement Workflow
+
+```json
+{ "projectId": "carport-demo", "unit": "mm" }
+```
+
+Then import reference photos, define known dimensions, attach a profile, validate, generate the model, and export the requested output profile. The carport profile is the first fixture and uses width, depth, roof slope, high/low side heights, foundation heights, step runs, openings, and context references as structured inputs.
+
+Output is intentionally profile-oriented: the same measured project can later target permit-support drawings, customer previews, fabrication packages, web viewers, or internal QA without changing the source geometry.
+
+Supported export templates are `permit`, `permit-facade-pack`, `swedish-municipality`, `gothenburg-permit`, `measured-visualization`, `client-preview`, `fabrication`, `qa-validation`, `site-context`, `photo-alignment`, `measurement-book`, `web-viewer`, and `archive`.
+
+`cad-simulated` remains as a deprecated legacy alias for old clients. New integrations should not use CAD wording because the export is a measured Blender visualization, not a CAD-kernel result.
 
 ## Example: 2D Sketch
 
@@ -141,6 +195,13 @@ pnpm start
 ## Documentation
 
 - [Tool contracts and operation guide](docs/blender-mcp.md)
+- [Architecture](docs/architecture.md)
+- [MVP product contract](docs/mvp.md)
+- [Measurement data contract](docs/data-contract.md)
+- [Quality gates](docs/quality-gates.md)
+- [Threat model](docs/threat-model.md)
+- [Public core policy](docs/public-core.md)
+- [Release checklist](docs/release-checklist.md)
 - [Security policy](SECURITY.md)
 - [Contributing guide](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)

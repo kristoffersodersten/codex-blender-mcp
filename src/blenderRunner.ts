@@ -38,7 +38,7 @@ export async function runBlenderJob(
   await mkdir(config.outputDir, { recursive: true });
   const outputPath = safeOutputPath(config.outputDir, outputFile);
   const blenderPath = await resolveBlenderPath(config.blenderPath);
-  const tempDir = await mkdtemp(path.join(os.tmpdir(), "codex-blender-mcp-"));
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), "nova-measured-"));
   const payloadPath = path.join(tempDir, "payload.json");
   const bridgePath = await resolveBridgePath();
 

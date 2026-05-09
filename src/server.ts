@@ -5,7 +5,7 @@ import { loadConfig } from "./config.js";
 import { registerBlenderTools } from "./tools.js";
 
 const server = new McpServer({
-  name: "codex-blender-mcp",
+  name: "nova-measured",
   version: "0.1.0"
 });
 
